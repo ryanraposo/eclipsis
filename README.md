@@ -1,104 +1,159 @@
-# eclipsis
+# Eclipsis
 
-Interactive prototype for a floating voice assistant App Clip powered by OpenAI Realtime.
+<p align="center">
+  <strong>Floating voice assistant App Clip prototype</strong><br/>
+  Built for realtime, on-device moments with an elegant overlay UI and OpenAI Realtime.
+</p>
 
-The prototype is based on the provided concept board: a small assistant window that floats over any app, supports push-to-talk triggers, streams voice plus text responses, and connects to OpenAI Realtime through a small server-side token broker.
+<p align="center">
+  <img src="screenshots/eclipsis-desktop.png" alt="Eclipsis desktop preview" width="920"/>
+</p>
 
-## Architecture
+---
 
-Eclipsis uses the current OpenAI Realtime pattern:
+## 1) Configure the assistant
 
-1. The App Clip or browser client asks your server for an ephemeral Realtime client secret.
-2. The Ubuntu server uses `OPENAI_API_KEY` to call OpenAI's Realtime client secret endpoint.
-3. The client uses that ephemeral secret to negotiate a WebRTC session directly with OpenAI Realtime.
-4. OpenAI streams audio and transcript events back to the floating UI.
+### Prerequisites
+- Node.js 20+
+- npm 10+
+- OpenAI API key with Realtime access
 
-Default model: `gpt-realtime-1.5`
-
-Cost fallback: `gpt-realtime-mini`
-
-## Run
-
-Create an environment file:
-
+### Environment setup
 ```bash
 cp .env.example .env
 ```
 
-Set `OPENAI_API_KEY` in `.env`, then run the server:
+Set `OPENAI_API_KEY` in `.env`.
 
+### Realtime model defaults
+- Primary model: `gpt-realtime-1.5`
+- Cost-aware fallback: `gpt-realtime-mini`
+
+### Local run
 ```bash
+npm install
 npm run dev
 ```
 
-Then visit `http://localhost:5173`.
+Open: `http://localhost:5173`
 
-Without `OPENAI_API_KEY`, the UI still works as a visual prototype, but the Realtime connection button will report that the server is not configured.
+If no API key is present, the UI remains fully viewable as a design prototype, but live Realtime connect will be disabled.
 
-## Ubuntu 24.04 VM Deployment
+---
 
-This app can run on either EC2 or an Azure VM.
+## 2) Host + expose on a VM (`:4173`)
 
+This project is a single-node Express app with static frontend + token broker.
+
+### Ubuntu VM quickstart
 ```bash
 sudo apt update
 sudo apt install -y nodejs npm
+
 git clone <your-repo-url> eclipsis
 cd eclipsis
 npm install
 cp .env.example .env
-nano .env
-npm start
+# edit .env and add OPENAI_API_KEY
+PORT=4173 npm start
 ```
 
-For production, run it behind Caddy or Nginx with HTTPS. Browser microphone access and WebRTC should be served from `https://` except during local development.
+### Open firewall / security group
+Allow inbound TCP `4173` from your required CIDR(s).
 
-## App Clip Screenshots
+### Verify health and app
+```bash
+curl http://127.0.0.1:4173/api/health
+curl http://127.0.0.1:4173/
+```
 
-Generate cropped App Clip/iPhone state shots:
+### Production recommendation
+Use HTTPS termination (Caddy/Nginx) and route `443 -> localhost:4173`.
+WebRTC + microphone behavior is more reliable in secure origins.
 
+---
+
+## 3) Comprehensive iOS-side instructions
+
+### iOS capabilities this prototype maps to
+- **Action Button trigger** (quick launch gesture)
+- **Back Tap trigger**
+- **Siri Shortcut trigger**
+- **Control Center trigger concept**
+
+### Suggested iPhone-side implementation checklist
+1. Create App Clip target + associated domain for your launch URL.
+2. Host invocation payload (`appclips:` URL or universal link metadata) on your domain.
+3. Add microphone permission strings in Info.plist (`NSMicrophoneUsageDescription`).
+4. Implement push-to-talk state machine: `idle -> listening -> streaming -> spoken reply`.
+5. Request ephemeral Realtime client secret from `/api/realtime/session` on your VM.
+6. Negotiate WebRTC directly from iOS client to OpenAI Realtime using ephemeral secret.
+7. Render transcript + voice response in the floating compact UI.
+8. Persist only lightweight local context; keep sensitive storage server-side.
+
+### App Clip UX guidance
+- Keep first paint under ~1 second for the floating capsule.
+- Provide a clear privacy affordance before first mic capture.
+- Add a visible fallback if network or token broker is unavailable.
+- Offer one-tap “Stop listening” at all times.
+
+---
+
+## Media scripts (👌)
+
+### Generate all App Clip state captures
 ```bash
 npm run screenshot
 ```
 
-The generator starts the local Node server when needed and saves:
-
-- `screenshots/appclips/eclipsis-appclip-usage-board.png`
-- `screenshots/appclips/eclipsis-appclip-listening-over-article.png`
-- `screenshots/appclips/eclipsis-appclip-ready-home-screen.png`
-- `screenshots/appclips/eclipsis-appclip-realtime-response.png`
-
-Full-page captures are still available:
-
+### Generate iPhone wireframe spread (codified montage, local artifact only)
 ```bash
+npm run screenshot:wireframe
+```
+
+> The wireframe output is intentionally git-ignored and should not be committed.
+
+### Optional individual captures
+```bash
+npm run screenshot:board
+npm run screenshot:listening
+npm run screenshot:ready
+npm run screenshot:response
 npm run screenshot:desktop
 npm run screenshot:mobile
 ```
 
-## What Is Included
+Outputs are saved to:
+- `screenshots/appclips/`
+- `screenshots/eclipsis-desktop.png`
+- `screenshots/eclipsis-mobile.png`
 
-- Floating App Clip assistant UI with three phone states.
-- Push-to-talk interaction with listening and answering states.
-- OpenAI Realtime WebRTC connection flow.
-- Express token broker for ephemeral Realtime sessions.
-- Trigger selector for Action Button, Back Tap, Siri Shortcut, and Control Center.
-- Prompt selector with three sample response modes.
-- Architecture section covering iPhone App Clip, Ubuntu token broker, OpenAI Realtime, tools, and storage.
-- Rationale and roadmap sections from the concept board.
+---
 
-## Project Shape
+## Architecture at a glance
+1. Client asks broker for ephemeral Realtime credential.
+2. Broker (`server/index.js`) calls OpenAI session endpoint with `OPENAI_API_KEY`.
+3. Client uses ephemeral secret for direct WebRTC session with OpenAI Realtime.
+4. Audio + transcript stream into overlay assistant UI.
+
+---
+
+## Project shape
 
 ```text
 eclipsis/
+  README.md
   index.html
   package.json
-  README.md
+  .env.example
   server/
     index.js
-  scripts/
-    screenshot.js
-  screenshots/
-    appclips/
   src/
     main.js
     styles.css
+  scripts/
+    screenshot.js
+    wireframe-spread.js
+  screenshots/
+    appclips/
 ```
