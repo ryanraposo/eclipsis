@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Eclipsis | Floating Voice Assistant</title>
+    <meta
+      name="description"
+      content="Eclipsis is a floating voice assistant App Clip prototype using OpenAI Realtime API, WebRTC, and a small Ubuntu-hosted token broker."
+    />
+    <link rel="stylesheet" href="./src/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero" aria-labelledby="page-title">
+        <div class="hero__intro">
+          <p class="eyebrow">App Clip voice assistant</p>
+          <h1 id="page-title">Eclipsis</h1>
+          <p class="lede">Quick access to an AI assistant anywhere, with a small floating window that listens, thinks, and replies without pulling you out of flow.</p>
+
+          <div class="feature-list" aria-label="Core capabilities">
+            <article class="feature">
+              <span class="feature__icon" aria-hidden="true">▣</span>
+              <div>
+                <h2>Always on Top</h2>
+                <p>Compact overlay that stays available above the active app.</p>
+              </div>
+            </article>
+            <article class="feature">
+              <span class="feature__icon" aria-hidden="true">◉</span>
+              <div>
+                <h2>Push to Talk</h2>
+                <p>Hold the action button, use Back Tap, or launch by shortcut.</p>
+              </div>
+            </article>
+            <article class="feature">
+              <span class="feature__icon" aria-hidden="true">✦</span>
+              <div>
+                <h2>Streaming Response</h2>
+                <p>Speech-to-speech responses stream through OpenAI Realtime.</p>
+              </div>
+            </article>
+          </div>
+
+          <div class="trigger-card" aria-labelledby="trigger-title">
+            <h2 id="trigger-title">Trigger Surface</h2>
+            <div class="trigger-grid">
+              <button class="trigger is-active" type="button" data-trigger="Action Button">
+                <span>⌁</span>
+                <strong>Action Button</strong>
+              </button>
+              <button class="trigger" type="button" data-trigger="Back Tap">
+                <span>↯</span>
+                <strong>Back Tap</strong>
+              </button>
+              <button class="trigger" type="button" data-trigger="Siri Shortcut">
+                <span>✧</span>
+                <strong>Siri</strong>
+              </button>
+              <button class="trigger" type="button" data-trigger="Control Center">
+                <span>⌘</span>
+                <strong>Control Center</strong>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="demo-stage" aria-label="Eclipsis assistant demo">
+          <div class="phone phone--article" aria-label="Floating over reading app">
+            <div class="phone__bar">
+              <span>9:41</span>
+              <span>LTE 100%</span>
+            </div>
+            <div class="article-screen">
+              <button class="back-button" type="button" aria-label="Back">‹</button>
+              <h2>The Future of Artificial Intelligence</h2>
+              <p>Artificial Intelligence is changing the way people learn, work, and make decisions across every industry.</p>
+              <p>Ask Eclipsis to summarize, compare, define, or route an idea into a next action.</p>
+              <h3>Key Trends</h3>
+              <ul>
+                <li>Machine learning</li>
+                <li>Natural language interfaces</li>
+                <li>Context-aware automation</li>
+              </ul>
+            </div>
+            <aside class="assistant-window assistant-window--floating" aria-live="polite">
+              <div class="orb"></div>
+              <strong data-status-label>Listening...</strong>
+              <div class="wave" aria-hidden="true">
+                <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+              </div>
+            </aside>
+          </div>
+
+          <div class="phone phone--home" aria-label="Floating over home screen">
+            <div class="phone__bar">
+              <span>9:41</span>
+              <span>Wi-Fi 100%</span>
+            </div>
+            <div class="home-grid" aria-hidden="true">
+              <span>FaceTime</span><span>Calendar</span><span>Photos</span><span>Mail</span>
+              <span>Notes</span><span>Reminders</span><span>News</span><span>Podcasts</span>
+              <span>Maps</span><span>Health</span><span>Wallet</span><span>Settings</span>
+            </div>
+            <aside class="assistant-window assistant-window--centered">
+              <div class="orb"></div>
+              <strong>Ready</strong>
+              <p id="trigger-readout">Action Button armed</p>
+              <div class="wave wave--quiet" aria-hidden="true">
+                <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+              </div>
+            </aside>
+            <div class="dock" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+          </div>
+
+          <div class="phone phone--answer" aria-label="Assistant answer with voice and text">
+            <div class="phone__bar">
+              <span>9:41</span>
+              <span>5G 100%</span>
+            </div>
+            <div class="answer-screen">
+              <button class="back-button" type="button" aria-label="Back">‹</button>
+              <h2 id="topic-title">Renewable Energy Overview</h2>
+              <p>Renewable energy comes from natural sources that are replenished faster than they are consumed.</p>
+              <ul>
+                <li>Solar power</li>
+                <li>Wind energy</li>
+                <li>Hydropower</li>
+                <li>Geothermal energy</li>
+                <li>Biomass</li>
+              </ul>
+            </div>
+            <aside class="assistant-window assistant-window--response">
+              <div class="orb"></div>
+              <p id="assistant-response">Renewable energy uses naturally replenished sources such as sunlight, wind, water, and geothermal heat.</p>
+              <div class="wave" aria-hidden="true">
+                <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="control-band" aria-labelledby="try-title">
+        <div>
+          <p class="eyebrow">Interactive prototype</p>
+          <h2 id="try-title">Try the Realtime voice loop</h2>
+        </div>
+        <div class="voice-controls">
+          <button id="connect-button" class="talk-button talk-button--secondary" type="button">
+            Connect Realtime
+          </button>
+          <button id="talk-button" class="talk-button" type="button" aria-pressed="false">
+            <span class="talk-button__icon" aria-hidden="true">●</span>
+            Hold to Talk
+          </button>
+          <label class="topic-picker">
+            <span>Prompt</span>
+            <select id="topic-select">
+              <option value="energy">Explain renewable energy</option>
+              <option value="ai">Summarize the AI article</option>
+              <option value="meeting">Draft a meeting follow-up</option>
+            </select>
+          </label>
+        </div>
+        <p id="connection-status" class="connection-status" role="status">Demo mode. Add `OPENAI_API_KEY` on the server to connect.</p>
+      </section>
+
+      <section class="architecture" aria-labelledby="architecture-title">
+        <div class="section-heading">
+          <p class="eyebrow">Backend architecture</p>
+          <h2 id="architecture-title">OpenAI Realtime over WebRTC with a small Ubuntu token broker</h2>
+        </div>
+        <div class="pipeline" aria-label="System pipeline">
+          <article class="node node--client">
+            <h3>iPhone App Clip</h3>
+            <p>Floating UI, push to talk, microphone capture, response audio playback, and text transcript.</p>
+          </article>
+          <article class="node node--server">
+            <span>Ubuntu 24.04</span>
+            <h3>Token Broker</h3>
+            <p>Express server on EC2 or Azure VM keeps the OpenAI API key private and mints ephemeral client secrets.</p>
+          </article>
+          <article class="node node--openai">
+            <span>OpenAI</span>
+            <h3>Realtime API</h3>
+            <p>WebRTC session to `gpt-realtime-1.5` for low-latency audio input and audio output.</p>
+          </article>
+          <article class="node node--tools">
+            <span>Tools</span>
+            <h3>Actions Layer</h3>
+            <p>Optional server-side functions for calendar, notes, retrieval, memory, and account-specific tasks.</p>
+          </article>
+          <article class="node node--store">
+            <h3>Storage</h3>
+            <p>Minimal preferences, opt-in memory, transcript retention controls, and observability logs.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="support-grid" aria-label="Rationale and roadmap">
+        <article>
+          <h2>Why This Setup?</h2>
+          <div class="pill-row">
+            <span>Low latency</span>
+            <span>Scalable</span>
+            <span>Secure</span>
+            <span>Cost effective</span>
+            <span>Portable</span>
+          </div>
+        </article>
+        <article>
+          <h2>How It Works</h2>
+          <ol>
+            <li>Voice is captured in the App Clip.</li>
+            <li>The client asks the Ubuntu server for an ephemeral OpenAI Realtime secret.</li>
+            <li>The client opens a WebRTC session directly to OpenAI Realtime.</li>
+            <li>The model streams speech and transcript events back to the floating window.</li>
+          </ol>
+        </article>
+        <article>
+          <h2>Future Enhancements</h2>
+          <ul>
+            <li>Wake word detection</li>
+            <li>Continuous conversation mode</li>
+            <li>Memory and personalization</li>
+            <li>Vision plus voice workflows</li>
+          </ul>
+        </article>
+      </section>
+    </main>
+    <script src="./src/main.js"></script>
+  </body>
+</html>

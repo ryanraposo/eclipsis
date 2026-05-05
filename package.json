@@ -1,0 +1,35 @@
+{
+  "name": "eclipsis",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Interactive prototype for a floating voice assistant App Clip.",
+  "scripts": {
+    "dev": "node server/index.js",
+    "start": "node server/index.js",
+    "screenshot": "node scripts/screenshot.js",
+    "screenshot:appclips": "node scripts/screenshot.js",
+    "screenshot:board": "node scripts/screenshot.js board",
+    "screenshot:desktop": "node scripts/screenshot.js desktop",
+    "screenshot:mobile": "node scripts/screenshot.js mobile",
+    "screenshot:listening": "node scripts/screenshot.js listening",
+    "screenshot:ready": "node scripts/screenshot.js ready",
+    "screenshot:response": "node scripts/screenshot.js response"
+  },
+  "keywords": [
+    "voice-assistant",
+    "app-clip",
+    "prototype",
+    "openai-realtime",
+    "webrtc"
+  ],
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@playwright/test": "^1.59.1"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "helmet": "^8.1.0"
+  }
+}
