@@ -1,4 +1,4 @@
-# Eclipsis
+# eclipsis
 
 Interactive prototype for a floating voice assistant App Clip powered by OpenAI Realtime.
 
