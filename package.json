@@ -13,7 +13,8 @@
     "screenshot:mobile": "node scripts/screenshot.js mobile",
     "screenshot:listening": "node scripts/screenshot.js listening",
     "screenshot:ready": "node scripts/screenshot.js ready",
-    "screenshot:response": "node scripts/screenshot.js response"
+    "screenshot:response": "node scripts/screenshot.js response",
+    "screenshot:wireframe": "node scripts/wireframe-spread.js"
   },
   "keywords": [
     "voice-assistant",
