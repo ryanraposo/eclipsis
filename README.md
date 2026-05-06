@@ -28,6 +28,8 @@ Set `OPENAI_API_KEY` in `.env`.
 ### Realtime model defaults
 - Primary model: `gpt-realtime-1.5`
 - Cost-aware fallback: `gpt-realtime-mini`
+- GPT Image 2 supports API-side moderation strictness through the `moderation` parameter (`auto` or `low`).
+- Realtime safety stays service-side; optional app guardrails use `/api/moderations/check` for transcript and prompt checks.
 
 ### Local run
 ```bash
@@ -65,6 +67,50 @@ Allow inbound TCP `4173` from your required CIDR(s).
 ```bash
 curl http://127.0.0.1:4173/api/health
 curl http://127.0.0.1:4173/
+```
+
+### App Clip invocation URL
+Set your public origin and App Clip identifier:
+```bash
+PUBLIC_ORIGIN=https://your-domain.example
+APPCLIP_PATH=/appclip
+APPCLIP_APP_ID=<TEAM_ID>.<app-clip-bundle-id>
+```
+
+The hosted invocation URL is:
+```text
+https://your-domain.example/voice?trigger=action-button&topic=ai&start=1
+```
+
+For the no-App-Store prototype path, open this page on iPhone:
+```text
+https://your-domain.example/shortcuts
+```
+
+Create a Shortcut named `Eclipsis`, add the `Open URLs` action, and set the URL to `Shortcut Input`. Then bind that Shortcut to Action Button, Back Tap, Siri, Control Center, QR, or NFC with one of the hosted `/voice?start=1` URLs.
+
+For private use before the native App Clip exists, set an access token and use the voice launch URL:
+```bash
+ECLIPSIS_AUTH_TOKEN=<private-token>
+OPENAI_TITLE_MODEL=gpt-5.4
+OPENAI_TRANSCRIPTION_MODEL=gpt-4o-mini-transcribe
+```
+
+Then open:
+```text
+https://your-domain.example/voice?start=1
+```
+
+The browser will try to start a voice chat immediately. If iOS requires a gesture for microphone or audio playback, Eclipsis shows the same page with a single `Start Voice` button.
+
+The server also hosts the Apple App Site Association file at:
+```text
+https://your-domain.example/.well-known/apple-app-site-association
+```
+
+In Xcode, add this Associated Domains entry to the app and App Clip targets:
+```text
+appclips:your-domain.example
 ```
 
 ### Production recommendation
@@ -135,6 +181,16 @@ Outputs are saved to:
 2. Broker (`server/index.js`) calls OpenAI session endpoint with `OPENAI_API_KEY`.
 3. Client uses ephemeral secret for direct WebRTC session with OpenAI Realtime.
 4. Audio + transcript stream into overlay assistant UI.
+
+## Configuration schema
+
+The app’s user-facing and server-side configurables are inventoried in:
+
+```text
+config.schema.json
+```
+
+See `docs/configuration.md` for UI locations, defaults, enums, persistence, and API mappings.
 
 ---
 

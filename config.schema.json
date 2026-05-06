@@ -1,0 +1,697 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://your-domain.example/schemas/eclipsis-config.schema.json",
+  "title": "Eclipsis Runtime Configuration",
+  "description": "Schemafied inventory of user-facing and server-side Eclipsis configurables, including defaults, types, enum values, storage/API mapping, and UI placement.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["clientSettings", "toolSettings", "agenticActions", "imageGeneration", "safetyControls", "serverEnvironment"],
+  "properties": {
+    "clientSettings": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assistantName": {
+          "type": "string",
+          "default": "Eclipsis",
+          "minLength": 1,
+          "maxLength": 48,
+          "storage": "localStorage:eclipsis.settings.assistantName",
+          "ui": {
+            "primaryLocation": "main-chat-module.meta.assistant-name",
+            "settingsLocation": "settings.assistant.name",
+            "htmlId": "setting-assistant-name",
+            "readoutId": "assistant-name-readout",
+            "control": "text"
+          },
+          "apiMapping": {
+            "realtimeInstructions": "Interpolated into /api/realtime/session instructions"
+          }
+        },
+        "orbColor": {
+          "type": "string",
+          "default": "#7f64ff",
+          "pattern": "^#[0-9a-fA-F]{6}$",
+          "storage": "localStorage:eclipsis.settings.orbColor",
+          "ui": {
+            "primaryLocation": "main-chat-module.orb",
+            "settingsLocation": "settings.assistant.orb-color",
+            "htmlId": "setting-orb-color",
+            "cssVariable": "--orb-accent",
+            "control": "color"
+          }
+        },
+        "voiceModel": {
+          "type": "string",
+          "default": "gpt-realtime-1.5",
+          "enum": ["gpt-realtime-1.5", "gpt-realtime-mini"],
+          "storage": "localStorage:eclipsis.settings.voiceModel",
+          "ui": {
+            "primaryLocation": "main-chat-module.meta.collapsed-voice-model-style",
+            "settingsLocation": "settings.assistant.voice-model",
+            "htmlId": "setting-voice-model",
+            "readoutId": "voice-summary",
+            "control": "select"
+          },
+          "apiMapping": {
+            "request": "POST /api/realtime/session body.model",
+            "serverValidation": "server/index.js allowedRealtimeModels"
+          }
+        },
+        "voiceName": {
+          "type": "string",
+          "default": "marin",
+          "enum": ["marin", "cedar"],
+          "storage": "localStorage:eclipsis.settings.voiceName",
+          "ui": {
+            "primaryLocation": "settings.assistant.voice",
+            "settingsLocation": "settings.assistant.voice",
+            "htmlId": "setting-voice-name",
+            "control": "select"
+          },
+          "apiMapping": {
+            "request": "POST /api/realtime/session body.voice",
+            "serverValidation": "server/index.js allowedRealtimeVoices"
+          }
+        },
+        "voiceStyle": {
+          "type": "string",
+          "default": "balanced",
+          "enum": ["balanced", "warm", "direct", "playful", "quiet"],
+          "storage": "localStorage:eclipsis.settings.voiceStyle",
+          "ui": {
+            "primaryLocation": "main-chat-module.meta.collapsed-voice-model-style",
+            "settingsLocation": "settings.assistant.style",
+            "htmlId": "setting-voice-style",
+            "readoutId": "voice-summary",
+            "control": "select"
+          },
+          "apiMapping": {
+            "realtimeInstructions": "Included as Voice style in /api/realtime/session instructions"
+          }
+        },
+        "persona": {
+          "type": "string",
+          "default": "operator",
+          "enum": ["operator", "coach", "researcher", "concierge", "companion"],
+          "storage": "localStorage:eclipsis.settings.persona",
+          "ui": {
+            "primaryLocation": "settings.assistant.persona",
+            "settingsLocation": "settings.assistant.persona",
+            "htmlId": "setting-persona",
+            "control": "select"
+          },
+          "apiMapping": {
+            "realtimeInstructions": "Included as Persona in /api/realtime/session instructions"
+          }
+        },
+        "accent": {
+          "type": "string",
+          "default": "neutral",
+          "enum": ["neutral", "american", "british", "australian", "irish"],
+          "storage": "localStorage:eclipsis.settings.accent",
+          "ui": {
+            "primaryLocation": "settings.assistant.accent",
+            "settingsLocation": "settings.assistant.accent",
+            "htmlId": "setting-accent",
+            "control": "select"
+          },
+          "apiMapping": {
+            "realtimeInstructions": "Included as Accent target in /api/realtime/session instructions"
+          }
+        },
+        "latency": {
+          "type": "string",
+          "default": "balanced",
+          "enum": ["balanced", "fastest", "thoughtful"],
+          "storage": "localStorage:eclipsis.settings.latency",
+          "ui": {
+            "primaryLocation": "main-chat-module.meta.collapsed-voice-model-style",
+            "settingsLocation": "settings.assistant.latency",
+            "htmlId": "setting-latency",
+            "readoutId": "voice-summary",
+            "control": "select"
+          },
+          "apiMapping": {
+            "realtimeInstructions": "Included as Latency preference in /api/realtime/session instructions"
+          }
+        },
+        "contextLength": {
+          "type": "string",
+          "default": "medium",
+          "enum": ["short", "medium", "long"],
+          "storage": "localStorage:eclipsis.settings.contextLength",
+          "ui": {
+            "primaryLocation": "settings.assistant.context-length",
+            "settingsLocation": "settings.assistant.context-length",
+            "htmlId": "setting-context-length",
+            "control": "select"
+          },
+          "apiMapping": {
+            "realtimeInstructions": "Included as Context length preference in /api/realtime/session instructions"
+          }
+        },
+        "responseLength": {
+          "type": "string",
+          "default": "brief",
+          "enum": ["brief", "normal", "detailed"],
+          "storage": "localStorage:eclipsis.settings.responseLength",
+          "ui": {
+            "primaryLocation": "settings.assistant.response-length",
+            "settingsLocation": "settings.assistant.response-length",
+            "htmlId": "setting-response-length",
+            "control": "select"
+          },
+          "apiMapping": {
+            "realtimeInstructions": "Included as Response length preference in /api/realtime/session instructions"
+          }
+        },
+        "interruptionStyle": {
+          "type": "string",
+          "default": "allow",
+          "enum": ["allow", "gentle", "finish-first"],
+          "storage": "localStorage:eclipsis.settings.interruptionStyle",
+          "ui": {
+            "primaryLocation": "settings.assistant.interruptions",
+            "settingsLocation": "settings.assistant.interruptions",
+            "htmlId": "setting-interruption-style",
+            "control": "select"
+          },
+          "apiMapping": {
+            "realtimeInstructions": "Included as Interruption style in /api/realtime/session instructions"
+          }
+        },
+        "wakePhrase": {
+          "type": "string",
+          "default": "hey ryan",
+          "minLength": 1,
+          "maxLength": 64,
+          "storage": "localStorage:eclipsis.settings.wakePhrase",
+          "ui": {
+            "primaryLocation": "settings.assistant.wake-phrase",
+            "settingsLocation": "settings.assistant.wake-phrase",
+            "htmlId": "setting-wake-phrase",
+            "control": "text"
+          },
+          "apiMapping": {
+            "realtimeInstructions": "Included as Wake phrase in /api/realtime/session instructions"
+          }
+        },
+        "wakeMode": {
+          "type": "string",
+          "default": "soft",
+          "enum": ["off", "soft", "strict"],
+          "storage": "localStorage:eclipsis.settings.wakeMode",
+          "ui": {
+            "primaryLocation": "settings.assistant.wake-phrase-mode",
+            "settingsLocation": "settings.assistant.wake-phrase-mode",
+            "htmlId": "setting-wake-mode",
+            "control": "select"
+          }
+        },
+        "confirmationStyle": {
+          "type": "string",
+          "default": "yes-nah-sure-explain",
+          "enum": ["yes-nah-sure-explain", "explicit", "minimal"],
+          "storage": "localStorage:eclipsis.settings.confirmationStyle",
+          "ui": {
+            "primaryLocation": "settings.assistant.confirmation-style",
+            "settingsLocation": "settings.assistant.confirmation-style",
+            "htmlId": "setting-confirmation-style",
+            "control": "select"
+          }
+        },
+        "actionAutonomy": {
+          "type": "string",
+          "default": "confirm-before-action",
+          "enum": ["suggest-only", "confirm-before-action", "low-risk-auto"],
+          "storage": "localStorage:eclipsis.settings.actionAutonomy",
+          "ui": {
+            "primaryLocation": "settings.assistant.action-autonomy",
+            "settingsLocation": "settings.assistant.action-autonomy",
+            "htmlId": "setting-action-autonomy",
+            "control": "select"
+          }
+        },
+        "systemInstruction": {
+          "type": "string",
+          "default": "You are a fast, useful voice assistant. Be concise, practical, and warm. Prefer action over explanation unless the user asks for detail.",
+          "maxLength": 4000,
+          "storage": "localStorage:eclipsis.settings.systemInstruction",
+          "ui": {
+            "primaryLocation": "main-chat-module.system-instruction-button",
+            "settingsLocation": "settings.system-instruction",
+            "htmlId": "setting-system-instruction",
+            "openButtonId": "system-instruction-button",
+            "control": "textarea"
+          },
+          "apiMapping": {
+            "realtimeInstructions": "Included verbatim in /api/realtime/session instructions"
+          }
+        },
+        "voiceChat": {
+          "type": "boolean",
+          "default": true,
+          "storage": "localStorage:eclipsis.settings.voiceChat",
+          "ui": {
+            "primaryLocation": "settings.behavior.voice-chat",
+            "settingsLocation": "settings.behavior.voice-chat",
+            "htmlId": "setting-voice-chat",
+            "control": "checkbox"
+          }
+        },
+        "autoStart": {
+          "type": "boolean",
+          "default": true,
+          "storage": "localStorage:eclipsis.settings.autoStart",
+          "ui": {
+            "primaryLocation": "settings.behavior.auto-start-launch-urls",
+            "settingsLocation": "settings.behavior.auto-start-launch-urls",
+            "htmlId": "setting-auto-start",
+            "control": "checkbox"
+          },
+          "launchMapping": {
+            "urlParams": ["start=1", "autostart=1"],
+            "routes": ["/", "/voice", "/appclip"]
+          }
+        },
+        "saveTranscripts": {
+          "type": "boolean",
+          "default": true,
+          "storage": "localStorage:eclipsis.settings.saveTranscripts",
+          "ui": {
+            "primaryLocation": "settings.behavior.save-transcripts-locally",
+            "settingsLocation": "settings.behavior.save-transcripts-locally",
+            "htmlId": "setting-save-transcripts",
+            "control": "checkbox"
+          },
+          "dataMapping": {
+            "conversations": "localStorage:eclipsis.conversations"
+          }
+        }
+      }
+    },
+    "agenticActions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "draftMessage": {
+          "type": "boolean",
+          "default": true,
+          "storage": "localStorage:eclipsis.settings.actions.draftMessage",
+          "ui": {
+            "primaryLocation": "settings.agentic-actions.draft-messages",
+            "htmlId": "action-draft-message",
+            "control": "checkbox"
+          },
+          "risk": "low",
+          "permission": "None for draft; user confirmation before sending.",
+          "currentCapability": "Can prepare message text only."
+        },
+        "summarizePage": {
+          "type": "boolean",
+          "default": true,
+          "storage": "localStorage:eclipsis.settings.actions.summarizePage",
+          "ui": {
+            "primaryLocation": "settings.agentic-actions.summarize-pages",
+            "htmlId": "action-summarize-page",
+            "control": "checkbox"
+          },
+          "risk": "low",
+          "permission": "Needs browser/share-sheet or pasted page content.",
+          "currentCapability": "Can summarize provided text or context."
+        },
+        "createReminder": {
+          "type": "boolean",
+          "default": false,
+          "storage": "localStorage:eclipsis.settings.actions.createReminder",
+          "ui": {
+            "primaryLocation": "settings.agentic-actions.create-reminders",
+            "htmlId": "action-create-reminder",
+            "control": "checkbox"
+          },
+          "risk": "medium",
+          "permission": "Requires future Reminders/Shortcuts integration and confirmation.",
+          "currentCapability": "Can prepare reminder payload text."
+        },
+        "prepareCalendar": {
+          "type": "boolean",
+          "default": false,
+          "storage": "localStorage:eclipsis.settings.actions.prepareCalendar",
+          "ui": {
+            "primaryLocation": "settings.agentic-actions.prepare-calendar-events",
+            "htmlId": "action-prepare-calendar",
+            "control": "checkbox"
+          },
+          "risk": "medium",
+          "permission": "Requires future calendar integration and confirmation.",
+          "currentCapability": "Can prepare event details."
+        },
+        "generateImage": {
+          "type": "boolean",
+          "default": true,
+          "storage": "localStorage:eclipsis.settings.actions.generateImage",
+          "ui": {
+            "primaryLocation": "settings.agentic-actions.generate-images",
+            "htmlId": "action-generate-image",
+            "control": "checkbox"
+          },
+          "risk": "cost",
+          "permission": "Requires auth token and OpenAI API key.",
+          "currentCapability": "Can call POST /api/images/generate."
+        },
+        "webResearch": {
+          "type": "boolean",
+          "default": false,
+          "storage": "localStorage:eclipsis.settings.actions.webResearch",
+          "ui": {
+            "primaryLocation": "settings.agentic-actions.run-web-research",
+            "htmlId": "action-web-research",
+            "control": "checkbox"
+          },
+          "risk": "medium",
+          "permission": "Requires future web/search integration and confirmation.",
+          "currentCapability": "Instruction hint only."
+        }
+      }
+    },
+    "toolSettings": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "web": {
+          "type": "boolean",
+          "default": false,
+          "storage": "localStorage:eclipsis.settings.tools.web",
+          "ui": {
+            "primaryLocation": "main-chat-module.quick-tools.web",
+            "settingsLocation": "settings.tools.web-context",
+            "htmlId": "tool-web",
+            "chipSelector": "[data-tool-chip='web']",
+            "control": "checkbox"
+          },
+          "behavior": "Instruction hint only; no browser-side web tool is executed yet."
+        },
+        "memory": {
+          "type": "boolean",
+          "default": true,
+          "storage": "localStorage:eclipsis.settings.tools.memory",
+          "ui": {
+            "primaryLocation": "main-chat-module.quick-tools.memory",
+            "settingsLocation": "settings.tools.memory-hints",
+            "htmlId": "tool-memory",
+            "chipSelector": "[data-tool-chip='memory']",
+            "control": "checkbox"
+          },
+          "behavior": "Instruction hint plus local transcript availability."
+        },
+        "clipboard": {
+          "type": "boolean",
+          "default": false,
+          "storage": "localStorage:eclipsis.settings.tools.clipboard",
+          "ui": {
+            "primaryLocation": "main-chat-module.quick-tools.clipboard",
+            "settingsLocation": "settings.tools.clipboard-handoff",
+            "htmlId": "tool-clipboard",
+            "chipSelector": "[data-tool-chip='clipboard']",
+            "control": "checkbox"
+          },
+          "behavior": "Instruction hint only; clipboard read/write is not executed without a future permission flow."
+        },
+        "calendar": {
+          "type": "boolean",
+          "default": false,
+          "storage": "localStorage:eclipsis.settings.tools.calendar",
+          "ui": {
+            "primaryLocation": "main-chat-module.quick-tools.calendar",
+            "settingsLocation": "settings.tools.calendar-intent",
+            "htmlId": "tool-calendar",
+            "chipSelector": "[data-tool-chip='calendar']",
+            "control": "checkbox"
+          },
+          "behavior": "Instruction hint only; calendar integration is not executed yet."
+        },
+        "image": {
+          "type": "boolean",
+          "default": true,
+          "storage": "localStorage:eclipsis.settings.tools.image",
+          "ui": {
+            "primaryLocation": "main-chat-module.quick-tools.image",
+            "settingsLocation": "settings.tools.gpt-image-2",
+            "htmlId": "tool-image",
+            "chipSelector": "[data-tool-chip='image']",
+            "control": "checkbox"
+          },
+          "apiMapping": {
+            "endpoint": "POST /api/images/generate"
+          }
+        }
+      }
+    },
+    "imageGeneration": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "prompt": {
+          "type": "string",
+          "default": "",
+          "maxLength": 4000,
+          "ui": {
+            "primaryLocation": "settings.gpt-image-2.prompt",
+            "htmlId": "image-prompt",
+            "control": "textarea"
+          },
+          "apiMapping": {
+            "request": "POST /api/images/generate body.prompt"
+          }
+        },
+        "size": {
+          "type": "string",
+          "default": "1024x1024",
+          "enum": ["1024x1024", "1024x1536", "1536x1024"],
+          "ui": {
+            "primaryLocation": "settings.gpt-image-2.size",
+            "htmlId": "image-size",
+            "control": "select"
+          },
+          "apiMapping": {
+            "request": "POST /api/images/generate body.size"
+          }
+        },
+        "quality": {
+          "type": "string",
+          "default": "low",
+          "enum": ["low", "medium", "high"],
+          "ui": {
+            "primaryLocation": "settings.gpt-image-2.quality",
+            "htmlId": "image-quality",
+            "control": "select"
+          },
+          "apiMapping": {
+            "request": "POST /api/images/generate body.quality"
+          }
+        },
+        "moderation": {
+          "type": "string",
+          "default": "auto",
+          "enum": ["auto", "low"],
+          "storage": "localStorage:eclipsis.settings.imageModeration",
+          "ui": {
+            "primaryLocation": "settings.safety.gpt-image-2-moderation",
+            "htmlId": "setting-image-moderation",
+            "control": "select"
+          },
+          "apiMapping": {
+            "request": "POST /api/images/generate body.moderation",
+            "upstreamRequest": "POST /v1/images/generations moderation"
+          },
+          "notes": "GPT Image models, including gpt-image-2, support moderation values auto and low."
+        },
+        "model": {
+          "type": "string",
+          "default": "gpt-image-2",
+          "env": "OPENAI_IMAGE_MODEL",
+          "apiMapping": {
+            "serverDefault": "server/index.js imageModel",
+            "endpoint": "POST /v1/images/generations"
+          },
+          "notes": "gpt-image-2 supports configurable size, quality, and moderation strictness."
+        }
+      }
+    },
+    "safetyControls": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "imageModeration": {
+          "type": "string",
+          "default": "auto",
+          "enum": ["auto", "low"],
+          "storage": "localStorage:eclipsis.settings.imageModeration",
+          "ui": {
+            "primaryLocation": "settings.safety.gpt-image-2-moderation",
+            "htmlId": "setting-image-moderation",
+            "control": "select"
+          },
+          "apiMapping": {
+            "request": "POST /api/images/generate body.moderation",
+            "upstreamRequest": "POST /v1/images/generations moderation"
+          }
+        },
+        "realtimeSafetyMode": {
+          "type": "string",
+          "default": "openai-default",
+          "enum": ["openai-default", "moderate-transcripts", "block-flagged"],
+          "storage": "localStorage:eclipsis.settings.realtimeSafetyMode",
+          "ui": {
+            "primaryLocation": "settings.safety.realtime-safety",
+            "htmlId": "setting-realtime-safety-mode",
+            "control": "select"
+          },
+          "apiMapping": {
+            "realtime": "No Realtime session content-filter field is sent; OpenAI Realtime safety remains service-side.",
+            "guardrail": "When enabled, transcript text is checked with POST /api/moderations/check."
+          }
+        },
+        "moderationModel": {
+          "type": "string",
+          "default": "omni-moderation-latest",
+          "enum": ["omni-moderation-latest", "text-moderation-latest"],
+          "storage": "localStorage:eclipsis.settings.moderationModel",
+          "ui": {
+            "primaryLocation": "settings.safety.moderation-model",
+            "htmlId": "setting-moderation-model",
+            "control": "select"
+          },
+          "apiMapping": {
+            "request": "POST /api/moderations/check body.model",
+            "upstreamRequest": "POST /v1/moderations model"
+          }
+        },
+        "moderationBehavior": {
+          "type": "string",
+          "default": "explain-and-confirm",
+          "enum": ["warn", "block", "explain-and-confirm"],
+          "storage": "localStorage:eclipsis.settings.moderationBehavior",
+          "ui": {
+            "primaryLocation": "settings.safety.flagged-behavior",
+            "htmlId": "setting-moderation-behavior",
+            "control": "select"
+          },
+          "apiMapping": {
+            "clientBehavior": "Controls what the UI does when /api/moderations/check returns flagged=true."
+          }
+        }
+      }
+    },
+    "serverEnvironment": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "OPENAI_API_KEY": {
+          "type": "string",
+          "default": "",
+          "secret": true,
+          "env": "OPENAI_API_KEY",
+          "ui": {
+            "primaryLocation": "server-only",
+            "visibleInClient": false
+          }
+        },
+        "ECLIPSIS_AUTH_TOKEN": {
+          "type": "string",
+          "default": "",
+          "secret": true,
+          "env": "ECLIPSIS_AUTH_TOKEN",
+          "ui": {
+            "primaryLocation": "auth-gate.access-token",
+            "htmlId": "auth-token",
+            "control": "password"
+          },
+          "apiMapping": {
+            "header": "Authorization: Bearer <token>",
+            "protectedEndpoints": [
+              "POST /api/realtime/session",
+              "POST /api/conversations/title",
+              "POST /api/images/generate"
+            ]
+          }
+        },
+        "OPENAI_REALTIME_MODEL": {
+          "type": "string",
+          "default": "gpt-realtime-1.5",
+          "enum": ["gpt-realtime-1.5", "gpt-realtime-mini"],
+          "env": "OPENAI_REALTIME_MODEL",
+          "overridableByClient": "clientSettings.voiceModel"
+        },
+        "OPENAI_REALTIME_VOICE": {
+          "type": "string",
+          "default": "marin",
+          "enum": ["marin", "cedar"],
+          "env": "OPENAI_REALTIME_VOICE",
+          "overridableByClient": "clientSettings.voiceName"
+        },
+        "OPENAI_BASE_URL": {
+          "type": "string",
+          "default": "https://api.openai.com",
+          "format": "uri",
+          "env": "OPENAI_BASE_URL"
+        },
+        "OPENAI_TITLE_MODEL": {
+          "type": "string",
+          "default": "gpt-5.4",
+          "env": "OPENAI_TITLE_MODEL",
+          "apiMapping": {
+            "endpoint": "POST /v1/responses",
+            "usedBy": "POST /api/conversations/title"
+          }
+        },
+        "OPENAI_TRANSCRIPTION_MODEL": {
+          "type": "string",
+          "default": "gpt-4o-mini-transcribe",
+          "enum": ["gpt-4o-mini-transcribe", "gpt-4o-transcribe", "gpt-4o-transcribe-latest", "whisper-1"],
+          "env": "OPENAI_TRANSCRIPTION_MODEL",
+          "apiMapping": {
+            "usedBy": "Realtime session audio.input.transcription.model"
+          }
+        },
+        "PUBLIC_ORIGIN": {
+          "type": "string",
+          "default": "https://your-domain.example",
+          "format": "uri",
+          "env": "PUBLIC_ORIGIN",
+          "ui": {
+            "primaryLocation": "shortcuts-page.generated-launch-urls"
+          }
+        },
+        "APPCLIP_PATH": {
+          "type": "string",
+          "default": "/appclip",
+          "pattern": "^/",
+          "env": "APPCLIP_PATH"
+        },
+        "APPCLIP_APP_ID": {
+          "type": "string",
+          "default": "ABCDE12345.com.example.Eclipsis.Clip",
+          "env": "APPCLIP_APP_ID",
+          "ui": {
+            "primaryLocation": "apple-app-site-association.appclips.apps"
+          }
+        },
+        "SHORTCUT_NAME": {
+          "type": "string",
+          "default": "Eclipsis",
+          "env": "SHORTCUT_NAME",
+          "ui": {
+            "primaryLocation": "shortcuts-page.shortcut-name"
+          }
+        },
+        "PORT": {
+          "type": "integer",
+          "default": 5173,
+          "env": "PORT"
+        }
+      }
+    }
+  }
+}

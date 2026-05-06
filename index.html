@@ -8,10 +8,334 @@
       name="description"
       content="Eclipsis is a floating voice assistant App Clip prototype using OpenAI Realtime API, WebRTC, and a small Ubuntu-hosted token broker."
     />
-    <link rel="stylesheet" href="./src/styles.css" />
+    <link rel="stylesheet" href="./src/styles.css?v=voice-app-5" />
   </head>
   <body>
+    <div id="auth-gate" class="auth-gate" hidden>
+      <form class="auth-card" id="auth-form">
+        <p class="eyebrow">Private assistant</p>
+        <h2>Eclipsis</h2>
+        <p>Enter your access token to start voice sessions on this device.</p>
+        <label>
+          <span>Access token</span>
+          <input id="auth-token" type="password" autocomplete="current-password" />
+        </label>
+        <button class="talk-button" type="submit">Unlock</button>
+        <p id="auth-error" class="connection-status" role="status"></p>
+      </form>
+    </div>
+
     <main class="shell">
+      <section class="voice-app" aria-labelledby="voice-app-title">
+        <aside class="conversation-rail">
+          <div class="rail-heading">
+            <div>
+              <p class="eyebrow">Voice sessions</p>
+              <h2>Conversations</h2>
+            </div>
+            <button id="new-conversation-button" class="icon-button" type="button" aria-label="New conversation">+</button>
+          </div>
+          <div id="conversation-list" class="conversation-list"></div>
+        </aside>
+
+        <section class="voice-console">
+          <header class="voice-console__header">
+            <div>
+              <p class="eyebrow">Realtime voice</p>
+              <h1 id="voice-app-title">Eclipsis</h1>
+            </div>
+            <div class="header-actions">
+              <button id="settings-button" class="icon-button" type="button" aria-label="Settings">⚙</button>
+              <button id="voice-launch-button" class="talk-button" type="button">Start Voice</button>
+            </div>
+          </header>
+
+          <div class="voice-orb-panel" aria-live="polite">
+            <div class="voice-orb">
+              <div class="orb"></div>
+              <div class="wave" aria-hidden="true">
+                <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+              </div>
+            </div>
+            <div>
+              <h2 id="active-conversation-title">New voice chat</h2>
+              <div class="assistant-meta">
+                <strong id="assistant-name-readout">Eclipsis</strong>
+                <span id="voice-summary">gpt-realtime-1.5 · balanced</span>
+                <button id="system-instruction-button" class="instruction-button" type="button" aria-label="Open system instruction">{}</button>
+              </div>
+              <p id="launch-status">Ready for a secure voice session.</p>
+            </div>
+          </div>
+
+          <div id="transcript-log" class="transcript-log" aria-label="Conversation transcript"></div>
+
+          <footer class="quick-tools" aria-label="Enabled tools">
+            <span data-tool-chip="web">Web</span>
+            <span data-tool-chip="memory">Memory</span>
+            <span data-tool-chip="clipboard">Clipboard</span>
+            <span data-tool-chip="calendar">Calendar</span>
+            <span data-tool-chip="image">Image</span>
+          </footer>
+        </section>
+
+        <aside id="settings-panel" class="settings-panel" hidden>
+          <div class="rail-heading">
+            <div>
+              <p class="eyebrow">Session settings</p>
+              <h2>Controls</h2>
+            </div>
+            <button id="close-settings-button" class="icon-button" type="button" aria-label="Close settings">×</button>
+          </div>
+          <details class="settings-section" open>
+            <summary>Assistant</summary>
+            <label>
+              <span>Name</span>
+              <input id="setting-assistant-name" type="text" autocomplete="off" />
+            </label>
+            <label>
+              <span>Orb color</span>
+              <input id="setting-orb-color" type="color" />
+            </label>
+            <label>
+              <span>Voice model</span>
+              <select id="setting-voice-model">
+                <option value="gpt-realtime-1.5">gpt-realtime-1.5</option>
+                <option value="gpt-realtime-mini">gpt-realtime-mini</option>
+              </select>
+            </label>
+            <label>
+              <span>Voice</span>
+              <select id="setting-voice-name">
+                <option value="marin">Marin</option>
+                <option value="cedar">Cedar</option>
+              </select>
+            </label>
+            <label>
+              <span>Style</span>
+              <select id="setting-voice-style">
+                <option value="balanced">Balanced</option>
+                <option value="warm">Warm</option>
+                <option value="direct">Direct</option>
+                <option value="playful">Playful</option>
+                <option value="quiet">Quiet</option>
+              </select>
+            </label>
+            <label>
+              <span>Persona</span>
+              <select id="setting-persona">
+                <option value="operator">Operator</option>
+                <option value="coach">Coach</option>
+                <option value="researcher">Researcher</option>
+                <option value="concierge">Concierge</option>
+                <option value="companion">Companion</option>
+              </select>
+            </label>
+            <label>
+              <span>Accent</span>
+              <select id="setting-accent">
+                <option value="neutral">Neutral</option>
+                <option value="american">American</option>
+                <option value="british">British</option>
+                <option value="australian">Australian</option>
+                <option value="irish">Irish</option>
+              </select>
+            </label>
+            <label>
+              <span>Latency</span>
+              <select id="setting-latency">
+                <option value="balanced">Balanced</option>
+                <option value="fastest">Fastest</option>
+                <option value="thoughtful">Thoughtful</option>
+              </select>
+            </label>
+            <label>
+              <span>Context length</span>
+              <select id="setting-context-length">
+                <option value="short">Short</option>
+                <option value="medium">Medium</option>
+                <option value="long">Long</option>
+              </select>
+            </label>
+            <label>
+              <span>Response length</span>
+              <select id="setting-response-length">
+                <option value="brief">Brief</option>
+                <option value="normal">Normal</option>
+                <option value="detailed">Detailed</option>
+              </select>
+            </label>
+            <label>
+              <span>Interruptions</span>
+              <select id="setting-interruption-style">
+                <option value="allow">Allow</option>
+                <option value="gentle">Gentle</option>
+                <option value="finish-first">Finish first</option>
+              </select>
+            </label>
+            <label>
+              <span>Wake phrase</span>
+              <input id="setting-wake-phrase" type="text" autocomplete="off" />
+            </label>
+            <label>
+              <span>Wake phrase mode</span>
+              <select id="setting-wake-mode">
+                <option value="off">Off</option>
+                <option value="soft">Soft gate</option>
+                <option value="strict">Strict gate</option>
+              </select>
+            </label>
+            <label>
+              <span>Confirmation style</span>
+              <select id="setting-confirmation-style">
+                <option value="yes-nah-sure-explain">Yes / nah / sure / explain</option>
+                <option value="explicit">Explicit approve / deny</option>
+                <option value="minimal">Minimal</option>
+              </select>
+            </label>
+            <label>
+              <span>Action autonomy</span>
+              <select id="setting-action-autonomy">
+                <option value="suggest-only">Suggest only</option>
+                <option value="confirm-before-action">Confirm before action</option>
+                <option value="low-risk-auto">Auto low-risk actions</option>
+              </select>
+            </label>
+          </details>
+          <details class="settings-section">
+            <summary>Agentic Actions</summary>
+            <label class="switch-row">
+              <span>Draft messages</span>
+              <input id="action-draft-message" type="checkbox" />
+            </label>
+            <label class="switch-row">
+              <span>Summarize pages</span>
+              <input id="action-summarize-page" type="checkbox" />
+            </label>
+            <label class="switch-row">
+              <span>Create reminders</span>
+              <input id="action-create-reminder" type="checkbox" />
+            </label>
+            <label class="switch-row">
+              <span>Prepare calendar events</span>
+              <input id="action-prepare-calendar" type="checkbox" />
+            </label>
+            <label class="switch-row">
+              <span>Generate images</span>
+              <input id="action-generate-image" type="checkbox" />
+            </label>
+            <label class="switch-row">
+              <span>Run web research</span>
+              <input id="action-web-research" type="checkbox" />
+            </label>
+          </details>
+          <details class="settings-section">
+            <summary>Behavior</summary>
+            <label class="switch-row">
+              <span>Voice chat</span>
+              <input id="setting-voice-chat" type="checkbox" />
+            </label>
+            <label class="switch-row">
+              <span>Auto-start launch URLs</span>
+              <input id="setting-auto-start" type="checkbox" />
+            </label>
+            <label class="switch-row">
+              <span>Save transcripts locally</span>
+              <input id="setting-save-transcripts" type="checkbox" />
+            </label>
+          </details>
+          <details class="settings-section">
+            <summary>System Instruction</summary>
+            <textarea id="setting-system-instruction" rows="8"></textarea>
+          </details>
+          <details class="settings-section">
+            <summary>Tools</summary>
+            <label class="switch-row">
+              <span>Web context</span>
+              <input id="tool-web" type="checkbox" />
+            </label>
+            <label class="switch-row">
+              <span>Memory hints</span>
+              <input id="tool-memory" type="checkbox" />
+            </label>
+            <label class="switch-row">
+              <span>Clipboard handoff</span>
+              <input id="tool-clipboard" type="checkbox" />
+            </label>
+            <label class="switch-row">
+              <span>Calendar intent</span>
+              <input id="tool-calendar" type="checkbox" />
+            </label>
+            <label class="switch-row">
+              <span>GPT Image 2</span>
+              <input id="tool-image" type="checkbox" />
+            </label>
+          </details>
+          <details class="settings-section">
+            <summary>GPT Image 2</summary>
+            <label>
+              <span>Prompt</span>
+              <textarea id="image-prompt" rows="4" placeholder="Describe the image to generate"></textarea>
+            </label>
+            <div class="split-row">
+              <label>
+                <span>Size</span>
+                <select id="image-size">
+                  <option value="1024x1024">1024 square</option>
+                  <option value="1024x1536">Portrait</option>
+                  <option value="1536x1024">Landscape</option>
+                </select>
+              </label>
+              <label>
+                <span>Quality</span>
+                <select id="image-quality">
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                </select>
+              </label>
+            </div>
+            <button id="generate-image-button" class="talk-button talk-button--secondary" type="button">Generate Image</button>
+            <p id="image-status" class="connection-status" role="status"></p>
+            <img id="generated-image" class="generated-image" alt="Generated result" hidden />
+          </details>
+          <details class="settings-section">
+            <summary>Safety</summary>
+            <label>
+              <span>GPT Image 2 moderation</span>
+              <select id="setting-image-moderation">
+                <option value="auto">Auto</option>
+                <option value="low">Low</option>
+              </select>
+            </label>
+            <label>
+              <span>Realtime safety</span>
+              <select id="setting-realtime-safety-mode">
+                <option value="openai-default">OpenAI default</option>
+                <option value="moderate-transcripts">Moderate transcripts</option>
+                <option value="block-flagged">Block flagged</option>
+              </select>
+            </label>
+            <label>
+              <span>Moderation model</span>
+              <select id="setting-moderation-model">
+                <option value="omni-moderation-latest">omni-moderation-latest</option>
+                <option value="text-moderation-latest">text-moderation-latest</option>
+              </select>
+            </label>
+            <label>
+              <span>Flagged behavior</span>
+              <select id="setting-moderation-behavior">
+                <option value="explain-and-confirm">Explain and confirm</option>
+                <option value="warn">Warn</option>
+                <option value="block">Block</option>
+              </select>
+            </label>
+          </details>
+          <button id="clear-local-data-button" class="talk-button talk-button--secondary" type="button">Clear Local Data</button>
+        </aside>
+      </section>
+
       <section class="hero" aria-labelledby="page-title">
         <div class="hero__intro">
           <p class="eyebrow">App Clip voice assistant</p>
@@ -229,6 +553,6 @@
         </article>
       </section>
     </main>
-    <script src="./src/main.js"></script>
+    <script src="./src/main.js?v=voice-app-5"></script>
   </body>
 </html>
